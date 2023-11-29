@@ -4,15 +4,15 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>Categories</h5>
+                    <h5>Collections</h5>
                 </div>
                 <div class="card-body">
                     <div class="btn-popup pull-right">
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-original-title="test"
-                            data-target="#exampleModal" (click)="open(content)">Add Category</button>
+                            data-target="#exampleModal" (click)="open(content)">Add Collection</button>
                         <ng-template #content let-modal>
                             <div class="modal-header">
-                                <h5 class="modal-title f-w-600" id="exampleModalLabel">Add Category</h5>
+                                <h5 class="modal-title f-w-600" id="exampleModalLabel">Add Collection</h5>
                                 <button type="button" class="close" aria-label="Close"
                                     (click)="modal.dismiss('Cross click')">
                                     <span aria-hidden="true">&times;</span>
@@ -22,11 +22,11 @@
                                 <form class="needs-validation">
                                     <div class="form">
                                         <div class="form-group">
-                                            <label for="validationCustom01" class="mb-1">Category Name :</label>
+                                            <label for="validationCustom01" class="mb-1">Collection Name :</label>
                                             <input class="form-control" id="validationCustom01" type="text">
                                         </div>
                                         <div class="form-group mb-0">
-                                            <label for="validationCustom02" class="mb-1">Category Image :</label>
+                                            <label for="validationCustom02" class="mb-1">Collection Image :</label>
                                             <input class="form-control" id="validationCustom02" type="file">
                                         </div>
                                     </div>

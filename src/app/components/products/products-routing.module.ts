@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { DigitalCategoryComponent } from './digital/digital-category/digital-category.component';
+import { DigitalCollectionComponent } from './digital/digital-collection/digital-collection.component';
 import { DigitalListComponent } from './digital/digital-list/digital-list.component';
 import { DigitalAddComponent } from './digital/digital-add/digital-add.component';
 
@@ -9,11 +9,11 @@ const routes: Routes = [
     path: '',
     children: [
       {
-        path: 'digital/digital-category',
-        component: DigitalCategoryComponent,
+        path: 'digital/digital-collection',
+        component: DigitalCollectionComponent,
         data: {
-          title: "Category",
-          breadcrumb: "Category"
+          title: "Collection",
+          breadcrumb: "Collection"
         }
       },
       {

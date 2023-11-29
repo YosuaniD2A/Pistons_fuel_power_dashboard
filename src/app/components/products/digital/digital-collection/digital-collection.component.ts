@@ -6,21 +6,32 @@ import { NgbdSortableHeader } from "src/app/shared/directives/NgbdSortableHeader
 import { TableService } from 'src/app/shared/service/table.service';
 import { Observable } from 'rxjs';
 import { DecimalPipe } from '@angular/common';
+import { ApiService } from 'src/app/shared/service/api.service';
 
 @Component({
-  selector: 'app-digital-category',
-  templateUrl: './digital-category.component.html',
-  styleUrls: ['./digital-category.component.scss'],
+  selector: 'app-digital-collection',
+  templateUrl: './digital-collection.component.html',
+  styleUrls: ['./digital-collection.component.scss'],
   providers: [TableService, DecimalPipe],
 })
-export class DigitalCategoryComponent implements OnInit {
+export class DigitalCollectionComponent implements OnInit {
   public closeResult: string;
   tableItem$: Observable<DigitalCategoryDB[]>;
   public digital_categories = []
 
-  constructor(public service: TableService, private modalService: NgbModal) {
+  constructor(public apiService: ApiService, public service: TableService, private modalService: NgbModal) {
     this.tableItem$ = service.tableItem$;
     this.service.setUserData(DIGITALCATEGORY)
+    this.loadCollections();   
+  }
+
+  async loadCollections() {
+    const collection = await this.getAllCollections(); 
+    console.log(collection);
+  }
+  
+  async getAllCollections() {
+    return await this.apiService.getCollections();
   }
 
   @ViewChildren(NgbdSortableHeader) headers: QueryList<NgbdSortableHeader>;

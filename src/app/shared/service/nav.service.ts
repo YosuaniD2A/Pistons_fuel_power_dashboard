@@ -42,7 +42,7 @@ export class NavService {
 		},
 		{
 			title: 'Products', icon: 'box', type: 'sub', active: false, children: [
-				{ path: '/products/digital/digital-category', title: 'Category List', type: 'link' },
+				{ path: '/products/digital/digital-collection', title: 'Collections List', type: 'link' },
 				{ path: '/products/digital/digital-product-list', title: 'Product List', type: 'link' },
 				// { path: '/products/digital/digital-add-product', title: 'Add Product', type: 'link' },
 			]

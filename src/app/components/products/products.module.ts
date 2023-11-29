@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { ProductsRoutingModule } from './products-routing.module';
-import { DigitalCategoryComponent } from './digital/digital-category/digital-category.component';
+import { DigitalCollectionComponent } from './digital/digital-collection/digital-collection.component';
 import { DigitalListComponent } from './digital/digital-list/digital-list.component';
 import { DigitalAddComponent } from './digital/digital-add/digital-add.component';
 import { GalleryModule } from '@ks89/angular-modal-gallery';
@@ -20,8 +21,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
-  declarations: [DigitalCategoryComponent, DigitalListComponent, DigitalAddComponent ],
+  declarations: [DigitalCollectionComponent, DigitalListComponent, DigitalAddComponent ],
   imports: [
+    HttpClientModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
