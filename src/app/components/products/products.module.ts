@@ -16,6 +16,7 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { ChipsModule } from 'primeng/chips';
 import { ToastModule } from 'primeng/toast';
+import { ButtonModule } from 'primeng/button';
 // search module
 import { SharedModule } from 'src/app/shared/shared.module';
 
@@ -34,7 +35,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
     NgxDropzoneModule,
     ChipsModule,
     SharedModule,
-    ToastModule
+    ToastModule,
+    ButtonModule
   ],
   exports: [],
   bootstrap: [],

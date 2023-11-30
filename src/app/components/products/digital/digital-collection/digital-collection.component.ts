@@ -7,31 +7,59 @@ import { TableService } from 'src/app/shared/service/table.service';
 import { Observable } from 'rxjs';
 import { DecimalPipe } from '@angular/common';
 import { ApiService } from 'src/app/shared/service/api.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-digital-collection',
   templateUrl: './digital-collection.component.html',
   styleUrls: ['./digital-collection.component.scss'],
-  providers: [TableService, DecimalPipe],
+  providers: [TableService, DecimalPipe, MessageService],
 })
 export class DigitalCollectionComponent implements OnInit {
-  public closeResult: string;
-  tableItem$: Observable<DigitalCategoryDB[]>;
-  public digital_categories = []
 
-  constructor(public apiService: ApiService, public service: TableService, private modalService: NgbModal) {
-    this.tableItem$ = service.tableItem$;
-    this.service.setUserData(DIGITALCATEGORY)
-    this.loadCollections();   
+  tableItem$: Observable<any[]>;
+  total$: Observable<number>;
+  public closeResult: string;
+  public collectionsList: any[] = [];
+  visible: boolean = false;
+  itemSaved: boolean = false;
+  collectionSelected: number;
+
+  modelType: string = "add"
+  modelTitle: string = "Add Collection";
+  collectionData: any = {};
+
+  constructor(
+    public apiService: ApiService,
+    public service: TableService,
+    private modalService: NgbModal,
+    private messageService: MessageService,
+  ) { }
+
+  async ngOnInit() {
+    this.tableItem$ = this.service.tableItem$;
+    this.total$ = this.service.total$;
+    await this.loadCollections();
+    await this.loadProductsForCollections();
+    this.service.setUserData(this.collectionsList)
   }
 
   async loadCollections() {
-    const collection = await this.getAllCollections(); 
-    console.log(collection);
+    const collections = await this.getAllCollections();
+    this.collectionsList = collections.data;
   }
-  
+
   async getAllCollections() {
-    return await this.apiService.getCollections();
+    return await this.apiService.getAllCollections();
+  }
+
+  async loadProductsForCollections() {
+    for (const collection of this.collectionsList) {
+      const result = await this.apiService.getAllMyProducts(collection.id);
+      console.log(result.data[0].count);
+      
+      collection.products = result.data[0].count;
+    }
   }
 
   @ViewChildren(NgbdSortableHeader) headers: QueryList<NgbdSortableHeader>;
@@ -49,13 +77,37 @@ export class DigitalCollectionComponent implements OnInit {
 
   }
 
-  open(content) {
+  async open(content, id: number) {
+    if(id !== 0){
+      this.modelType = "update";
+      this.modelTitle = "Update Collection"; 
+      this.collectionSelected = id
+      try {
+        const result = await this.apiService.getCollection(id);
+
+        this.collectionData.name = result.data[0].name;
+        this.collectionData.description = result.data[0].description;
+        this.collectionData.img_url = result.data[0].img_url;
+        
+      } catch (error) {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: `Se produjo un error: ${error.message}` });
+      }
+
+    }else{
+      this.modelType = "add";
+    } 
+
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      this.resetValues();
+
+      if (this.itemSaved)
+        this.reload();
     });
   }
+
   private getDismissReason(reason: any): string {
     if (reason === ModalDismissReasons.ESC) {
       return 'by pressing ESC';
@@ -66,8 +118,85 @@ export class DigitalCollectionComponent implements OnInit {
     }
   }
 
+  async saveCollection() {
+    if (this.modelType === "add") {
+      const requiredProperties = ['name', 'description', 'img_url'];
+      const missingProperties = requiredProperties.filter(prop => !this.collectionData[prop]);
 
-  ngOnInit() {
+      if (missingProperties.length > 0) {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: `Por favor, complete los siguientes campos obligatorios: ${missingProperties.join(', ')}` });
+        return;
+      }
+
+      try {
+        const result = await this.apiService.addCollection(this.collectionData);
+        if (result.data.insertId !== 0) {
+          this.messageService.add({ severity: 'success', summary: 'Colleccion guardada', detail: `Se registro una nueva Coleccion con ID: ${result.data.insertId}` });
+          this.itemSaved = true;
+        }
+      } catch (error) {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: `Se produjo un error: ${error.message}` });
+      }
+    } else {
+      try {
+        const result = await this.apiService.updateCollection(this.collectionSelected, this.collectionData);        
+        if (result.data.affectedRows !== 0) {
+          this.messageService.add({ severity: 'success', summary: 'Colleccion editada', detail: `Se actualizo la Coleccion con ID: ${this.collectionSelected}` });
+          this.itemSaved = true;
+        }
+      } catch (error) {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: `Se produjo un error: ${error.message}` });
+      }
+    }
+  }
+
+  // async getMyProducts(id) {
+  //   const result = await this.apiService.getAllMyProducts(id);
+  //   console.log(result);
+    
+  // }
+
+  showConfirm(id: number) {
+    this.collectionSelected = id;
+    if (!this.visible) {
+      this.messageService.add({ key: 'confirm', sticky: true, severity: 'warn', summary: `You are about to delete this collection, are you sure ?`, detail: 'Confirm to proceed' });
+      this.visible = true;
+    }
+  }
+
+  async onConfirm() {
+    try {
+      const result = await this.apiService.deleteCollection(this.collectionSelected);
+      console.log(result);
+
+      if (result.data.affectedRows !== 0) {
+        this.messageService.add({ severity: 'success', summary: 'Coleccion eliminada', detail: `Se elimino la colecion correctamente` });
+        this.messageService.clear('confirm');
+        this.visible = false;
+
+        setTimeout(() => {
+          this.reload();
+        }, 1000);
+      }
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: `Se produjo un error: ${error.message}` });
+    }
+  }
+
+  onReject() {
+    this.messageService.clear('confirm');
+    this.visible = false;
+  }
+
+  resetValues(){
+    this.collectionSelected = 0;
+    this.modelType = "add";
+    this.modelTitle = "Add Collection";
+    this.collectionData = {}; 
+  }
+
+  reload() {
+    window.location.reload();
   }
 
 }

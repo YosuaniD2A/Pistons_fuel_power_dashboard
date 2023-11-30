@@ -54,6 +54,7 @@
     "ngx-dropzone-wrapper": "^11.0.0",
     "ngx-owl-carousel-o": "^16.0.0",
     "ngx-slimscroll": "^12.2.0",
+    "primeicons": "^6.0.1",
     "primeng": "^17.0.0-beta.1",
     "rxjs": "~7.5.5",
     "rxjs-compat": "^6.6.7",

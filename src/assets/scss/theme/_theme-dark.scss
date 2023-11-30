@@ -528,6 +528,17 @@ body {
         }
     }
 
+    .modal-body{
+        .needs-validation{
+          .form-group{
+            textarea{
+              border-color: $dark-border;
+              color: $white-5;
+            }
+          }
+        }
+      }
+
     .table-responsive {
         th {
             background-color: transparent;

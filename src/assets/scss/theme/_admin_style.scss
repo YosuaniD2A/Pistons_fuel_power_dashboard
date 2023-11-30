@@ -914,6 +914,30 @@ ng2-smart-table {
   }
 }
 
+.frame{
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid rgba($dark-gray, 0.25);
+  max-width: 60px;
+}
+
+.modal-body{
+  .needs-validation{
+    .form-group{
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+      align-items: start;
+
+      textarea{
+        width: 100%;
+        background-color: transparent;
+        padding: 7.68px 12px;
+      }
+    }
+  }
+}
+
 .add-product-form {
   .form-group {
     align-items: flex-start !important;

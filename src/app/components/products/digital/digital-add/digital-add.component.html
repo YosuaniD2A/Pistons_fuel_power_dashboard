@@ -24,11 +24,7 @@
                                 <select class="custom-select form-select" id="productType" required=""
                                     [(ngModel)]="selectedProductType">
                                     <option value="">--Select--</option>
-                                    <option value="T-shirt">T-shirt</option>
-                                    <option value="Hoddie">Hoddie</option>
-                                    <option value="Sweather">Sweather</option>
-                                    <option value="Tank top">Tank top</option>
-                                    <option value="Mug">Mug</option>
+                                    <option *ngFor="let type of types" [value]="type.code">{{ type.name }}</option>
                                 </select>
                             </div>
                             <div class="col-6 form-group">
@@ -36,11 +32,8 @@
                                     Collection</label>
                                 <select class="custom-select form-select" id="productCollection" required=""
                                     [(ngModel)]="selectedProductCollection">
-                                    <option value="">--Select--</option>
-                                    <option value="Classic Cars">Classic Cars</option>
-                                    <option value="Classic Motors">Classic Motors</option>
-                                    <option value="Engines">Engines</option>
-                                    <option value="Badges">Badges</option>
+                                    <option value="0">--Select--</option>
+                                    <option *ngFor="let collection of collections" [value]="collection.id">{{ collection.name }}</option>
                                 </select>
                             </div>
                         </div>
@@ -54,10 +47,7 @@
                                 <label class="col-form-label" for="productDiscount"> Discounts</label>
                                 <select class="custom-select form-select" id="productDiscount" required=""
                                     [(ngModel)]="selectedProductDiscount">
-                                    <option value="">--Select--</option>
-                                    <option value="20">20 %</option>
-                                    <option value="50">50 %</option>
-                                    <option value="75">75 %</option>
+                                    <option *ngFor="let discount of discounts" [value]="discount.id">{{ discount.percent }} %</option>
                                 </select>
                             </div>
                             <div class="col-12 col-md-4 form-group">
@@ -151,12 +141,12 @@
                                     <div class="digital-add needs-validation">
                                         <ul class="nav nav-tabs">
                                             <li class="nav-item">
-                                                <a class="nav-link" (click)="switchTab('tabFile')"
-                                                    [class.active]="tabFile" aria-current="page">File</a>
-                                            </li>
-                                            <li class="nav-item">
                                                 <a class="nav-link" (click)="switchTab('tabURL')"
                                                     [class.active]="tabURL">URL</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" (click)="switchTab('tabFile')"
+                                                    [class.active]="tabFile" aria-current="page">File</a>
                                             </li>
                                         </ul>
                                         <div class="p-4 d-flex gap-2 align-items-baseline" *ngIf="tabFile">
@@ -177,8 +167,11 @@
                                                             style="color: #ffffff;" *ngIf="list.length > 1"
                                                             (click)="RestItem(i)"></i>
                                                     </div>
-                                                    <div class="thumbnails" *ngIf="previewImage[item]">
+                                                    <!-- <div class="thumbnails" *ngIf="previewImage[item]">
                                                         <img [src]="previewImage[item]" width="100%" alt="Preview">
+                                                    </div> -->
+                                                    <div class="thumbnails" *ngIf="previewImages[item -1]?.img_url">
+                                                        <img [src]="previewImages[item -1]?.img_url" width="100%" alt="Preview">
                                                     </div>
                                                 </div>
                                             </div>
@@ -193,15 +186,18 @@
                                                     class="d-flex gap-2 align-items-baseline">
                                                     <div class="input-group mb-3 ">
                                                         <input type="text" class="form-control" id="inputText0{{item}}"
-                                                            (input)="onTextChange($event, item)">
+                                                            (blur)="onTextChange($event, item)">
                                                     </div>
                                                     <div class="" style="min-width: 20px;">
                                                         <i class="fa-solid fa-circle-minus fa-lg"
                                                             style="color: #ffffff;" *ngIf="list.length > 1"
                                                             (click)="RestItem(i)"></i>
                                                     </div>
-                                                    <div class="thumbnails" *ngIf="previewImage[item]">
+                                                    <!-- <div class="thumbnails" *ngIf="previewImage[item]">
                                                         <img [src]="previewImage[item]" width="100%" alt="Preview">
+                                                    </div> -->
+                                                    <div class="thumbnails" *ngIf="previewImages[item -1]?.img_url">
+                                                        <img [src]="previewImages[item -1]?.img_url" width="100%" alt="Preview">
                                                     </div>
                                                 </div>
                                             </div>
