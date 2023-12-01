@@ -260,11 +260,11 @@ export class DigitalAddComponent implements OnInit {
     this.productData.collection = this.selectedProductCollection;
     this.productData.discount = this.selectedProductDiscount;
     this.productData.onSale = this.onSale;
-    this.productData.tags = this.tags.join(',');
+    this.productData.tags = (this.tags != undefined && this.tags.length > 1) ? this.tags.join(',') : this.tags;
     this.productData.variants = this.generateProductVariants(this.selectedColor, this.selectedSizes);
     this.productData.images = this.previewImages;
 
-    const requiredProperties = ['title', 'type', 'category', 'collection', 'price', 'tags', 'variants', 'images'];
+    const requiredProperties = ['title', 'description', 'type', 'category', 'collection', 'price', 'tags', 'variants', 'images'];
     const missingProperties = requiredProperties.filter(prop => !this.productData[prop] || this.productData[prop] === '' || this.productData[prop].length === 0);
 
     if (missingProperties.length > 0) {
@@ -311,14 +311,10 @@ export class DigitalAddComponent implements OnInit {
           }
         }
       }
-
-
-
-
+      this.messageService.add({ severity: 'success', summary: 'Producto registrado', detail: `Se registro el producto ${this.productData.title} con ${this.productData.variants.length} variantes` });
     } catch (error) {
-
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: `Error obteniendo colecciones: ${error.message}` });
     }
-    this.messageService.add({ severity: 'success', summary: 'Producto registrado', detail: `Se registro el producto ${this.productData.title} con ${this.productData.variants.length} variantes` });
-    console.log('Datos del formulario:', this.productData);
+    
   }
 }

@@ -7,6 +7,7 @@ import { NgbdSortableHeader } from "src/app/shared/directives/NgbdSortableHeader
 import { TableService } from 'src/app/shared/service/table.service';
 import { DigitalCategoryDB } from 'src/app/shared/tables/digital-category';
 import { DIGITALLIST, DigitalListDB } from 'src/app/shared/tables/digital-list';
+import { ApiService } from 'src/app/shared/service/api.service';
 @Component({
   selector: 'app-digital-list',
   templateUrl: './digital-list.component.html',
@@ -14,12 +15,28 @@ import { DIGITALLIST, DigitalListDB } from 'src/app/shared/tables/digital-list';
   providers: [TableService, DecimalPipe],
 })
 export class DigitalListComponent implements OnInit {
-  tableItem$: Observable<DigitalListDB[]>;
-  public digital_categories = []
 
-  constructor(public service: TableService, private modalService: NgbModal) {
-    this.tableItem$ = service.tableItem$;
-    this.service.setUserData(DIGITALLIST)
+  tableItem$: Observable<any[]>;
+  total$: Observable<number>;
+  public productList: any[] = [];
+
+  constructor(public apiService: ApiService, public service: TableService, private modalService: NgbModal) {
+  }
+
+  async ngOnInit() { 
+    this.tableItem$ = this.service.tableItem$;
+    this.total$ = this.service.total$;
+    await this.loadProducts();
+    this.service.setUserData(this.productList)
+  }
+
+  async loadProducts() {
+    const products = await this.apiService.getAllProductsByVariants();
+    this.productList = products.data;    
+  }
+
+  async getAllCollections() {
+    return await this.apiService.getAllCollections();
   }
 
   @ViewChildren(NgbdSortableHeader) headers: QueryList<NgbdSortableHeader>;
@@ -37,6 +54,6 @@ export class DigitalListComponent implements OnInit {
 
   }
 
-  ngOnInit() { }
+  
 
 }

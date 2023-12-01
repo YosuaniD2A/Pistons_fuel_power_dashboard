@@ -46,7 +46,7 @@ export class DigitalCollectionComponent implements OnInit {
 
   async loadCollections() {
     const collections = await this.getAllCollections();
-    this.collectionsList = collections.data;
+    this.collectionsList = collections.data;    
   }
 
   async getAllCollections() {
@@ -56,7 +56,6 @@ export class DigitalCollectionComponent implements OnInit {
   async loadProductsForCollections() {
     for (const collection of this.collectionsList) {
       const result = await this.apiService.getAllMyProducts(collection.id);
-      console.log(result.data[0].count);
       
       collection.products = result.data[0].count;
     }

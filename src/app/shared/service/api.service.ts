@@ -46,6 +46,10 @@ export class ApiService {
     return lastValueFrom(this.http.post<any>(`${this.baseUrl}/products/addProduct`, data));
   }
 
+  getAllProductsByVariants(): Promise<any> {
+    return lastValueFrom(this.http.get<any>(`${this.baseUrl}/variants/getAllProductbyVariants`));
+  }
+
   //-------------------- Variant section -----------------------------------------
 
   addVariant(data: any): Promise<any> {
@@ -60,8 +64,12 @@ export class ApiService {
 
    //-------------------- Relationship Variant-Image section -----------------------------------------
 
-   addRelationshipVariantImage(data: any): Promise<any> {
+  addRelationshipVariantImage(data: any): Promise<any> {
     return lastValueFrom(this.http.post<any>(`${this.baseUrl}/images/addLinkImage`, data));
   }
+
+
+
+
 
 }
