@@ -8,6 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { SharedModule } from '../../shared/shared.module';
+import { ToastModule } from 'primeng/toast';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { SharedModule } from '../../shared/shared.module';
     ReactiveFormsModule,
     CarouselModule,
     SharedModule,
+    ToastModule,
     NgbModule
   ]
 })
