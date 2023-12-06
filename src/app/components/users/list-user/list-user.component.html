@@ -18,26 +18,27 @@
                                 <th scope="col" sortable="fName" (sort)="onSort($event)">First Name</th>
                                 <th scope="col" sortable="lName" (sort)="onSort($event)">Last Name</th>
                                 <th scope="col" sortable="email" (sort)="onSort($event)">Email</th>
-                                <th scope="col" sortable="last_login" (sort)="onSort($event)">Last Login</th>
-                                <th scope="col" sortable="role" (sort)="onSort($event)">Role</th>
+                                <!-- <th scope="col" sortable="last_login" (sort)="onSort($event)">Last Login</th> -->
+                                <th scope="col" sortable="role" (sort)="onSort($event)">Permission</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let item of tableItem$ | async ">
+                            <tr *ngFor="let item of (tableItem$ | async) ">
                                 <td>
                                     <a href="javascript:void(0)"><i class='fa fa-edit f-12'></i></a>&nbsp;
-                                    <a href="javascript:void(0)"><i class="fa fa-trash-o"></i></a>
+                                    <a href="javascript:void(0)" *ngIf="item.rol !== 'super'" (click)="showConfirm(item.id)" ><i class="fa fa-trash-o"></i></a>
                                 </td>
                                 <td scope="row">
-                                    <img [src]="item.avatar" class="imgTable" style="width: 20px">
+                                    <img [src]="item.img_profile" class="imgTable" style="width: 20px"
+                                    onerror="this.onerror=null; this.src='../assets/images/user.png';">
                                 </td>
                                 <td>
-                                    {{item.fName}}
+                                    {{item.name}}
                                 </td>
-                                <td>{{item.lName}}</td>
+                                <td>{{item.lastname}}</td>
                                 <td>{{item.email}}</td>
-                                <td>{{item.last_login}}</td>
-                                <td>{{item.role}}</td>
+                                <!-- <td>{{item.last_login}}</td> -->
+                                <td>{{item.permission}}</td>
                             </tr>
                         </tbody>
                     </table> 
@@ -50,5 +51,26 @@
             </div>
         </div>
     </div>
+    <p-toast position="bottom-center" key="confirm" (onClose)="onReject()" [baseZIndex]="5000">
+        <ng-template let-message pTemplate="message">
+            <div class="flex flex-column" style="flex: 1">
+                <div class="text-center">
+                    <i class="pi pi-exclamation-triangle" style="font-size: 3rem"></i>
+                    <h4 class="text-dark-emphasis">{{message.summary}}</h4>
+                    <p class="text-light-emphasis">{{message.detail}}</p>
+                </div>
+                <div class="grid p-fluid d-flex gap-3">
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onConfirm()" label="Yes"
+                            class="p-button-success rounded"></button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onReject()" label="No"
+                            class="p-button-secondary rounded"></button>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </p-toast>
 </div>
 <!-- Container-fluid Ends-->

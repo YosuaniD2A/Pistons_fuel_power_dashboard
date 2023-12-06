@@ -46,6 +46,7 @@ export class ApiService {
     return lastValueFrom(this.http.post<any>(`${this.baseUrl}/products/addProduct`, data));
   }
 
+
   getAllProductsByVariants(): Promise<any> {
     return lastValueFrom(this.http.get<any>(`${this.baseUrl}/variants/getAllProductbyVariants`));
   }
@@ -54,6 +55,10 @@ export class ApiService {
 
   addVariant(data: any): Promise<any> {
     return lastValueFrom(this.http.post<any>(`${this.baseUrl}/variants/addVariant`, data));
+  }
+
+  deleteVariant(id: number): Promise<any> {
+    return lastValueFrom(this.http.delete<any>(`${this.baseUrl}/variants/deleteVariant/${id}`));
   }
 
   //-------------------- Image section -----------------------------------------

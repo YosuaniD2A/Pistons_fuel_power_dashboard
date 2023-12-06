@@ -67,10 +67,12 @@
                                     <tr *ngFor="let producto of (tableItem$ | async); let i = index">
                                         <th scope="row">{{ i+1 }}</th>
                                         <td>
-                                            <div class="frame">
-                                                <img [src]="producto.img_url" class="imgTable" style="width: 100%"
+                                            <div class="d-flex gap-1">
+                                            <div class="frame" *ngFor="let url of producto.imagesUrl">
+                                                <img [src]="url" class="imgTable" style="width: 100%"
                                                     onerror="this.onerror=null; this.src='../assets/images/dashboard/product/1.jpg';">
                                             </div>
+                                        </div>
                                         </td>
                                         <td>{{ producto.sku }}</td>
                                         <td>{{ producto.title }}</td>
@@ -81,7 +83,7 @@
                                         <td>{{ producto.color }}</td>
                                         <td>
                                             <a href="javascript:void(0)"><i class='fa fa-edit f-12' ></i></a>&nbsp;
-                                            <a href="javascript:void(0)"><i class="fa fa-trash-o"></i></a>
+                                            <a href="javascript:void(0)"><i class="fa fa-trash-o" (click)="showConfirm(producto.variantId)"></i></a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -103,4 +105,25 @@
             </div>
         </div>
     </div>
+    <p-toast position="bottom-center" key="confirm" (onClose)="onReject()" [baseZIndex]="5000">
+        <ng-template let-message pTemplate="message">
+            <div class="flex flex-column" style="flex: 1">
+                <div class="text-center">
+                    <i class="pi pi-exclamation-triangle" style="font-size: 3rem"></i>
+                    <h4 class="text-dark-emphasis">{{message.summary}}</h4>
+                    <p class="text-light-emphasis">{{message.detail}}</p>
+                </div>
+                <div class="grid p-fluid d-flex gap-3">
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onConfirm()" label="Yes"
+                            class="p-button-success rounded"></button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onReject()" label="No"
+                            class="p-button-secondary rounded"></button>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </p-toast>
 </div>

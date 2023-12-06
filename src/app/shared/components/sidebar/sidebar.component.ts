@@ -1,4 +1,4 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { NavService, Menu } from '../../service/nav.service';
 
@@ -8,11 +8,12 @@ import { NavService, Menu } from '../../service/nav.service';
   styleUrls: ['./sidebar.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
 
   public menuItems: Menu[];
   public url: any;
   public fileurl: any;
+  userLogged: string;
 
   constructor(private router: Router, public navServices: NavService) {
     this.navServices.items.subscribe(menuItems => {
@@ -36,6 +37,10 @@ export class SidebarComponent {
         }
       })
     })
+  }
+
+  ngOnInit(): void {
+    this.userLogged = localStorage.getItem('userName') || 'Name';
   }
 
   // Active Nave state

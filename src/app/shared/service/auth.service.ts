@@ -20,4 +20,12 @@ export class AuthService {
   login(data): Promise<any> {
     return lastValueFrom(this.httpClient.post<any>(`${this.baseUrl}/auth/login`, data));
   }
+
+  getUser(): Promise<any> {
+    return lastValueFrom(this.httpClient.get<any>(`${this.baseUrl}/auth/getUsers`));
+  }
+
+  deleteUser(id): Promise<any> {
+    return lastValueFrom(this.httpClient.delete<any>(`${this.baseUrl}/auth/deleteUser/${id}`));
+  }
 }

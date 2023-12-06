@@ -71,7 +71,10 @@ export class LoginComponent implements OnInit {
         throw new Error('No debe dejar campos vacíos')
 
       let resp = await this.authService.login(data);
-      localStorage.setItem('token', resp.token);
+      console.log(resp);
+      
+      localStorage.setItem('userToken', resp.token);
+      localStorage.setItem('userName', resp.user.name);
 
       this.router.navigate(['/dashboard/default']);
 
@@ -80,7 +83,7 @@ export class LoginComponent implements OnInit {
       (!error.error?.msg) ? message = error.message : message = error.error.msg;
       console.error(error);
       
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: `Error obteniendo colecciones: ${message}` });
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: `Error en login: ${message}` });
     }
   }
 

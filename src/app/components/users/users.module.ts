@@ -7,9 +7,12 @@ import { UsersRoutingModule } from './users-routing.module';
 import { ListUserComponent } from './list-user/list-user.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { DividerModule } from 'primeng/divider';
+import { ToastModule } from 'primeng/toast';
+import { ButtonModule } from 'primeng/button';
 
 @NgModule({
   declarations: [ListUserComponent, CreateUserComponent],
@@ -18,7 +21,11 @@ import { SharedModule } from 'src/app/shared/shared.module';
     NgbModule,
     SharedModule,
     ReactiveFormsModule,
-    UsersRoutingModule
+    FormsModule,
+    UsersRoutingModule,
+    ButtonModule,
+    ToastModule,
+    DividerModule
   ]
 })
 export class UsersModule { }
