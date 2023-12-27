@@ -29,6 +29,9 @@ export class DigitalCollectionComponent implements OnInit {
   modelTitle: string = "Add Collection";
   collectionData: any = {};
 
+  collections!: any[];
+  selectedCollections!: any;
+
   constructor(
     public apiService: ApiService,
     public service: TableService,
@@ -40,26 +43,69 @@ export class DigitalCollectionComponent implements OnInit {
     this.tableItem$ = this.service.tableItem$;
     this.total$ = this.service.total$;
     await this.loadCollections();
-    await this.loadProductsForCollections();
+    // await this.loadProductsForCollections();
+    console.log(this.collectionsList);
+    this.collections = this.collectionsList;
     this.service.setUserData(this.collectionsList)
   }
 
   async loadCollections() {
     const collections = await this.getAllCollections();
     this.collectionsList = collections.data;    
+    console.log(this.collectionsList);
+    
   }
+
+  // async loadCollections() {
+  //   try {
+  //     const collections = await this.getAllCollections();
+  //     this.collectionsList = collections.data;
+  
+  //     // Para cada colección, obtener la cantidad de productos
+  //     const promises = this.collectionsList.map(async (collection) => {
+  //       try {
+  //         const result = await this.apiService.getAllMyProducts(collection.id);
+  //         collection.products = result.data[0].count;
+  //       } catch (error) {
+  //         // Manejar el error de la llamada
+  //         console.error(`Error para la colección ${collection.id}: ${error.message}`);
+  //       }
+  //     });
+  
+  //     // Esperar a que todas las llamadas se completen antes de continuar
+  //     await Promise.all(promises);
+  
+  //   } catch (error) {
+  //     console.error(`Error al cargar colecciones: ${error.message}`);
+  //   }
+  // }
 
   async getAllCollections() {
     return await this.apiService.getAllCollections();
   }
 
   async loadProductsForCollections() {
-    for (const collection of this.collectionsList) {
-      const result = await this.apiService.getAllMyProducts(collection.id);
-      
-      collection.products = result.data[0].count;
-    }
+    const promises = this.collectionsList.map(async (collection) => {
+      try {
+        const result = await this.apiService.getAllMyProducts(collection.id);
+        collection.products = result.data[0].count;
+      } catch (error) {
+        // Manejar el error de la llamada
+        console.error(`Error para la colección ${collection.id}: ${error.message}`);
+      }
+    });
+  
+    await Promise.all(promises);
   }
+
+  // async loadProductsForCollections() {
+  //   for (const collection of this.collectionsList) {
+  //     const result = await this.apiService.getAllMyProducts(collection.id);
+      
+  //     collection.products = result.data[0].count;
+  //   }
+
+  // }
 
   @ViewChildren(NgbdSortableHeader) headers: QueryList<NgbdSortableHeader>;
 
@@ -197,5 +243,8 @@ export class DigitalCollectionComponent implements OnInit {
   reload() {
     window.location.reload();
   }
+//  ------------------------------------------------------------------------------------------------------------------
+
+
 
 }

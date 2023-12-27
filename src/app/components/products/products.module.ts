@@ -17,6 +17,8 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
 import { ChipsModule } from 'primeng/chips';
 import { ToastModule } from 'primeng/toast';
 import { ButtonModule } from 'primeng/button';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { TableModule } from 'primeng/table';
 // search module
 import { SharedModule } from 'src/app/shared/shared.module';
 
@@ -36,7 +38,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
     ChipsModule,
     SharedModule,
     ToastModule,
-    ButtonModule
+    ProgressBarModule,
+    ButtonModule,
+    TableModule
   ],
   exports: [],
   bootstrap: [],

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { MessageService } from 'primeng/api';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -23,6 +23,7 @@ export class DigitalAddComponent implements OnInit {
   collections: any[] = [];
   discounts: any[] = [];
   types: any[] = [];
+  categories: any[] = [];
 
   productData: any = {};
   selectedProductType: string = '';
@@ -47,16 +48,27 @@ export class DigitalAddComponent implements OnInit {
   previewImages: { item: number, img_url: string }[] = [];
   files: File[] = [];
 
+  visible: boolean = false;
+  progress: number = 0;
+  interval = null;
 
-  constructor(private messageService: MessageService, private apiService: ApiService) { }
+
+  constructor(private messageService: MessageService, private apiService: ApiService, private cdr:ChangeDetectorRef) { }
 
   async ngOnInit() {
     this.types = [
-      { name: 'T-shirt', code: 'TS' },
-      { name: 'Hoddie', code: 'HD' },
-      { name: 'Sweather', code: 'SW' },
-      { name: 'Tank top', code: 'TT' },
-      { name: 'Mug', code: 'MU' }
+      { name: 'T-shirt', code: 'TSA', active: true },
+      { name: 'Hoddie', code: 'HOA', active: false },
+      { name: 'Sweather', code: 'SWA', active: false },
+      { name: 'Tank top', code: 'TTA', active: false },
+      { name: 'Mug', code: 'MUG', active: false }
+    ];
+
+    this.categories = [
+      { name: 'Men', code: 'ME', active: true },
+      { name: 'Women', code: 'WO', active: false },
+      { name: 'Youht', code: 'SW', active: false },
+      { name: 'Unisex', code: 'UN', active: false },
     ];
 
     this.sizes = [
@@ -64,17 +76,17 @@ export class DigitalAddComponent implements OnInit {
       { name: 'M', code: '00M' },
       { name: 'L', code: '00L' },
       { name: 'XL', code: '0XL' },
-      { name: 'XXL', code: '2XL' },
-      { name: 'XXXL', code: '3XL' }
+      { name: '2XL', code: '2XL' },
+      { name: '3XL', code: '3XL' }
     ];
 
     this.colors = [
-      { name: 'Black', code: 'B1', exa: '#000000', active: true },
-      { name: 'White', code: 'W1', exa: '#ffffff', active: false },
-      { name: 'Red', code: 'R1', exa: '#f60404', active: false },
-      { name: 'Blue', code: 'A1', exa: '#1c04f6', active: false },
-      { name: 'Navy', code: 'N1', exa: '#dcddc2', active: false },
-      { name: 'Green', code: 'G1', exa: '#0ca03d', active: false },
+      { name: 'Black', code: '1B', exa: '#000000', active: true },
+      { name: 'White', code: '1W', exa: '#ffffff', active: false },
+      { name: 'Red', code: '1R', exa: '#f60404', active: false },
+      { name: 'Blue', code: '1C', exa: '#1c04f6', active: false },
+      { name: 'Navy', code: '1N', exa: '#dcddc2', active: false },
+      { name: 'Green', code: '1G', exa: '#0ca03d', active: false },
     ]
 
     await this.getCollections();
@@ -145,7 +157,7 @@ export class DigitalAddComponent implements OnInit {
     const deletedItem = this.list.splice(index, 1)[0];
 
     // Limpiar la vista previa correspondiente
-    delete this.previewImages[deletedItem -1];
+    delete this.previewImages[deletedItem - 1];
   }
 
   switchTab(tab: string): void {
@@ -209,18 +221,31 @@ export class DigitalAddComponent implements OnInit {
   }
 
   onTextChange(event: any, item: number): void {
-    const img_url = event.target.value;
+    const img_url: string = event.target.value;
 
     if (img_url) {
       // Agregar el objeto al arreglo de vista previa
-      this.previewImages[item - 1] = { item, img_url };
+      const imgDownloable = img_url.replace(/dl=0/g, 'dl=1');
+      this.previewImages[item - 1] = { item, img_url: imgDownloable };
     } else {
       // Limpiar la vista previa si la URL está vacía
       this.previewImages[item - 1] = { item, img_url: '' };
     }
   }
 
-  generateProductVariants(color: any, sizesSelected: string[]): ProductVariant[] {
+  padNumberWithZeros(number: number): string {
+    const numberString = number.toString();
+    const zerosToAdd = 8 - numberString.length;
+  
+    if (zerosToAdd <= 0) {
+      return numberString; // No need to add zeros
+    }
+  
+    const zeros = '0'.repeat(zerosToAdd);
+    return zeros + numberString;
+  }
+
+  generateProductVariants(color: any, sizesSelected: string[], productsId: number): ProductVariant[] {
     const variants: ProductVariant[] = [];
 
     // Validar si sizesSelected tiene valores
@@ -235,12 +260,13 @@ export class DigitalAddComponent implements OnInit {
       return variants;
     }
 
-    sizesSelected.forEach((elem) => {
-      const size = this.sizes.find(item => item.name === elem);
-      const sku = `PFP000${color.code}${size.code}`;
+    sizesSelected.forEach((s) => {
+      const stringId = this.padNumberWithZeros(productsId);
+      const size = this.sizes.find(item => item.name === s);
+      const sku = `FP${stringId}${this.selectedProductCategory}${this.selectedProductType}${color.code}${size.code}`;
       const variant: ProductVariant = {
         color: color.name,
-        size: elem,
+        size: s,
         sku
       };
       variants.push(variant);
@@ -260,9 +286,14 @@ export class DigitalAddComponent implements OnInit {
     this.productData.collection = this.selectedProductCollection;
     this.productData.discount = this.selectedProductDiscount;
     this.productData.onSale = this.onSale;
-    this.productData.tags = (this.tags != undefined && this.tags.length > 1) ? this.tags.join(',') : this.tags;
-    this.productData.variants = this.generateProductVariants(this.selectedColor, this.selectedSizes);
     this.productData.images = this.previewImages;
+    this.productData.variants = [{}];
+    this.productData.tags = new Set([
+      this.tags,
+      this.selectedColor?.name,
+      this.selectedSizes
+    ]);
+    
 
     const requiredProperties = ['title', 'description', 'type', 'category', 'collection', 'price', 'tags', 'variants', 'images'];
     const missingProperties = requiredProperties.filter(prop => !this.productData[prop] || this.productData[prop] === '' || this.productData[prop].length === 0);
@@ -273,20 +304,23 @@ export class DigitalAddComponent implements OnInit {
     }
 
     try {
+      this.showConfirm()
       let generalData = {
         title: this.productData.title,
         description: this.productData.description ?? '',
         type: this.getNameFromCode(this.productData.type),
         price: this.productData.price,
         category: this.productData.category,
-        sale: (this.onSale) ? 1 : 0,
-        tags: this.productData.tags,
+        sale: (this.productData.onSale == true) ? 1 : 0,
+        tags: Array.from(this.productData.tags).join(','),
         collections_id: this.productData.collection,
         discounts_id: this.productData.discount,
       }
 
       const productResult = await this.apiService.addProduct(generalData);
       const products_id = productResult.data.insertId;
+
+      this.productData.variants = this.generateProductVariants(this.selectedColor, this.selectedSizes, products_id);
 
       const variantsIds = [];
       const imagesIds = [];
@@ -297,24 +331,61 @@ export class DigitalAddComponent implements OnInit {
         variantsIds.push(variantResult.data.insertId);
       }
 
-      if(this.productData.images.length > 0){
+      if (this.productData.images.length > 0) {
         for (const image of this.productData.images) {
-          console.log(image);
-          
-          const imageResult = await this.apiService.addImage(image);
-          imagesIds.push(imageResult.data.insertId);
+          if (image !== undefined) {
+            const imageResult = await this.apiService.addImage(image);
+            imagesIds.push(imageResult.data.insertId);
+          }
         }
+
 
         for (const variants_id of variantsIds) {
           for (const images_id of imagesIds) {
-            await this.apiService.addRelationshipVariantImage({variants_id, images_id});
+            await this.apiService.addRelationshipVariantImage({ variants_id, images_id });
           }
         }
       }
+      this.onReject();
       this.messageService.add({ severity: 'success', summary: 'Producto registrado', detail: `Se registro el producto ${this.productData.title} con ${this.productData.variants.length} variantes` });
     } catch (error) {
+      this.onReject();
       this.messageService.add({ severity: 'error', summary: 'Error', detail: `Error obteniendo colecciones: ${error.message}` });
     }
-    
+
+  }
+
+  showConfirm() {
+    if (!this.visible) {
+      this.messageService.add({ key: 'confirm', sticky: true, severity: 'custom', summary: 'Creating variations.' });
+      this.visible = true;
+      this.progress = 0;
+
+      if (this.interval) {
+        clearInterval(this.interval);
+      }
+
+      this.interval = setInterval(() => {
+        if (this.progress <= 100) {
+          this.progress = this.progress + 20;
+        }
+
+        if (this.progress >= 100) {
+          this.progress = 100;
+          clearInterval(this.interval);
+        }
+        this.cdr.detectChanges()
+      }, 1000);
+    }
+  }
+
+  onConfirm() {
+    this.messageService.clear('confirm');
+    this.visible = false;
+  }
+
+  onReject() {
+    this.messageService.clear('confirm');
+    this.visible = false;
   }
 }

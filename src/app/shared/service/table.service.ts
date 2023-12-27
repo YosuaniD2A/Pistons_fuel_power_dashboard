@@ -72,9 +72,7 @@ export class TableService {
     get pageSize() { return this._state.pageSize; }
     get searchTerm() { return this._state.searchTerm; }
 
-    set page(page: number) {
-        this._set({ page });
-    }
+    set page(page: number) { this._set({ page }); }
     set pageSize(pageSize: number) { this._set({ pageSize }); }
     set searchTerm(searchTerm: string) { this._set({ searchTerm }); }
     set sortColumn(sortColumn: SortColumn) { this._set({ sortColumn }); }
@@ -95,14 +93,14 @@ export class TableService {
         const { sortColumn, sortDirection, pageSize, page } = this._state;
 
         // 1. sort
-        let tableItem = sort(this.userData, sortColumn, sortDirection);
+        let tableItem = sort(this.userData!, sortColumn, sortDirection);
     
 
         // 2. filter
-        const total = tableItem.length;
+        const total = tableItem?.length;
 
         tableItem = tableItem
-            .map((item, i) => ({ id: i + 1, ...item }))
+            ?.map((item, i) => ({ id: i + 1, ...item }))
             .slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize);
         return of({ tableItem, total });
     }

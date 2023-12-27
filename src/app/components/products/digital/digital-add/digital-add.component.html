@@ -1,5 +1,20 @@
 <div class="container-fluid">
     <p-toast position="bottom-right"></p-toast>
+    <p-toast position="bottom-center" key="confirm" (onClose)="onReject()" [baseZIndex]="5000">
+        <ng-template let-message pTemplate="headless">
+            <section class="d-flex p-3 gap-2 w-100 bg-black" style="border-radius: 10px">
+                <i class="pi pi-cloud-upload text-primary-500 text-2xl"></i>
+                <div class="d-flex flex-column gap-2 w-100">
+                    <p class="m-0 lh-base text-white">{{ message.summary }}</p>
+                    <p class="m-0">{{ message.detail }}</p>
+                    <div class="d-flex flex-column gap-1">
+                        <p-progressBar mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
+                        <label class="text-end text-right text-white">Processing products...</label>
+                    </div>
+                </div>
+            </section>
+        </ng-template>
+        </p-toast>
     <div class="row product-adding">
         <div class="col-xl-6">
             <div class="card">
@@ -24,7 +39,9 @@
                                 <select class="custom-select form-select" id="productType" required=""
                                     [(ngModel)]="selectedProductType">
                                     <option value="">--Select--</option>
-                                    <option *ngFor="let type of types" [value]="type.code">{{ type.name }}</option>
+                                    <ng-container *ngFor="let type of types">
+                                        <option [value]="type.code" *ngIf="type.active">{{ type.name }}</option>
+                                    </ng-container>
                                 </select>
                             </div>
                             <div class="col-6 form-group">
@@ -71,9 +88,9 @@
                             <label class="col-form-label"><span>*</span> Category</label>
                             <select class="custom-select form-select" required="" [(ngModel)]="selectedProductCategory">
                                 <option value="">--Select--</option>
-                                <option value="Man">Man</option>
-                                <option value="Woman">Woman</option>
-                                <option value="Youht">Youht</option>
+                                <ng-container *ngFor="let category of categories">
+                                    <option [value]="category.code" *ngIf="category.active">{{ category.name }}</option>
+                                </ng-container>
                             </select>
                         </div>
                         <div class="form-group">

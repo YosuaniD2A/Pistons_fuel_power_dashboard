@@ -26,17 +26,24 @@ export class DigitalListComponent implements OnInit {
 
   variantSelected: number;
 
+  products!: any[];
+  selectedProducts!: any;
+
+  first = 0;
+  rows = 10;
+
   constructor(
-    public apiService: ApiService, 
-    public service: TableService, 
+    public apiService: ApiService,
+    public service: TableService,
     private modalService: NgbModal,
     private messageService: MessageService) {
   }
 
-  async ngOnInit() { 
+  async ngOnInit() {
     this.tableItem$ = this.service.tableItem$;
     this.total$ = this.service.total$;
     await this.loadProducts();
+    this.products = this.productList;
     this.service.setUserData(this.productList)
   }
 
@@ -45,10 +52,8 @@ export class DigitalListComponent implements OnInit {
     products.data.forEach(elem => {
       elem.imagesUrl = elem.imagesUrl.split(',');
     })
-    this.productList = products.data;   
-    console.log(this.productList);
-      
-    
+    this.productList = products.data;
+
   }
 
   async getAllCollections() {
@@ -80,7 +85,6 @@ export class DigitalListComponent implements OnInit {
   async onConfirm() {
     try {
       const result = await this.apiService.deleteVariant(this.variantSelected);
-      console.log(result);
 
       if (result.data.affectedRows !== 0) {
         this.messageService.add({ severity: 'success', summary: 'Coleccion eliminada', detail: `Se elimino la colecion correctamente` });
@@ -104,5 +108,11 @@ export class DigitalListComponent implements OnInit {
   reload() {
     window.location.reload();
   }
+
+  pageChange(event) {
+    this.first = event.first;
+    this.rows = event.rows;
+  }
+
 
 }

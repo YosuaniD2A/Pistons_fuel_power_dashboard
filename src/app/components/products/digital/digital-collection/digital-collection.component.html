@@ -8,7 +8,7 @@
                 </div>
 
                 <div class="card-body">
-                    <div class="btn-popup pull-right">
+                    <!-- <div class="btn-popup pull-right">
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-original-title="test"
                             data-target="#exampleModal" (click)="open(content, 0)">Add Collection</button>
                         <ng-template #content let-modal>
@@ -23,7 +23,8 @@
                                 <form class="needs-validation">
                                     <div class="form">
                                         <div class="form-group">
-                                            <label for="validationCustom01" class="mb-1">Collection Name :</label>
+                                            <label for="validationCustom01" class="mb-1">Collection Name
+                                                :</label>
                                             <input class="form-control" id="validationCustom01" type="text"
                                                 [(ngModel)]="collectionData.name" [ngModelOptions]="{standalone: true}">
                                         </div>
@@ -35,7 +36,8 @@
                                                 [ngModelOptions]="{standalone: true}"></textarea>
                                         </div>
                                         <div class="form-group mb-0">
-                                            <label for="validationCustom02" class="mb-1">Collection Image URL :</label>
+                                            <label for="validationCustom02" class="mb-1">Collection Image
+                                                URL :</label>
                                             <input class="form-control" id="validationCustom02" type="text"
                                                 [(ngModel)]="collectionData.img_url"
                                                 [ngModelOptions]="{standalone: true}">
@@ -49,8 +51,8 @@
                                     (click)="modal.dismiss('Cross click')">Close</button>
                             </div>
                         </ng-template>
-                    </div>
-                    <div class="custom-datatable">
+                    </div> -->
+                    <!-- <div class="custom-datatable">
                         <form>
                             <div class="mb-3">
                                 <input type='text' class="filter-ngx form-control" placeholder='Search...'
@@ -102,11 +104,96 @@
                                 <option [ngValue]="6">6 items per page</option>
                             </select>
                         </div>
+                    </div> -->
+                    <div class="card">
+                        <p-table #dt [value]="collections" [(selection)]="selectedCollections" dataKey="name"
+                            [tableStyle]="{'min-width': '50rem'}" [globalFilterFields]="['name']">
+                            <ng-template pTemplate="caption">
+                                <div class="table-header d-flex justify-content-between">
+                                    <span class="p-input-icon-left">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text"
+                                            (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Global Search" />
+                                    </span>
+
+                                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                                        data-original-title="test" data-target="#exampleModal"
+                                        (click)="open(content, 0)">Add Collection</button>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width: 4rem">
+                                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                    </th>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-collection>
+                                <tr>
+                                    <td>
+                                        <p-tableCheckbox [value]="collection"></p-tableCheckbox>
+                                    </td>
+                                    <td>
+                                        <div class="frame">
+                                            <img [src]="collection.img_url" class="imgTable" style="width: 100%"
+                                                onerror="this.onerror=null; this.src='../assets/images/dashboard/product/1.jpg';">
+                                        </div>
+                                    </td>
+                                    <td>{{collection.name}}</td>
+                                    <td>{{collection.description}}</td>
+                                    <td><a href="javascript:void(0)" class="action-button"><i class='fa fa-edit f-12'
+                                                (click)="open(content, collection.id)"></i></a>&nbsp;
+                                        <a href="javascript:void(0)" class="action-button"><i class="fa fa-trash-o"
+                                                (click)="showConfirm(collection.id)"></i></a>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <ng-template #content let-modal>
+        <div class="modal-header">
+            <h5 class="modal-title f-w-600" id="exampleModalLabel">{{modelTitle}}</h5>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form class="needs-validation">
+                <div class="form">
+                    <div class="form-group">
+                        <label for="validationCustom01" class="mb-1">Collection Name :</label>
+                        <input class="form-control" id="validationCustom01" type="text"
+                            [(ngModel)]="collectionData.name" [ngModelOptions]="{standalone: true}">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label" for="productDescription">Collection
+                            description :</label>
+                        <textarea rows="5" cols="12" id="productDescription" [(ngModel)]="collectionData.description"
+                            [ngModelOptions]="{standalone: true}"></textarea>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label for="validationCustom02" class="mb-1">Collection Image URL :</label>
+                        <input class="form-control" id="validationCustom02" type="text"
+                            [(ngModel)]="collectionData.img_url" [ngModelOptions]="{standalone: true}">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="saveCollection()">Save</button>
+            <button class="btn btn-secondary" type="button" data-dismiss="modal"
+                (click)="modal.dismiss('Cross click')">Close</button>
+        </div>
+    </ng-template>
     <p-toast position="bottom-right"></p-toast>
     <p-toast position="bottom-center" key="confirm" (onClose)="onReject()" [baseZIndex]="5000">
         <ng-template let-message pTemplate="message">

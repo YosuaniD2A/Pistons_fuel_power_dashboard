@@ -528,16 +528,93 @@ body {
         }
     }
 
-    .modal-body{
-        .needs-validation{
-          .form-group{
-            textarea{
-              border-color: $dark-border;
-              color: $white-5;
-            }
-          }
+    .p-datatable {
+        .p-datatable-header {
+            padding-bottom: 40px;
+            background-color: transparent;
+            border: none;
         }
-      }
+
+        .p-datatable-thead>tr>th {
+            background-color: transparent;
+            color: rgba($white, 0.9);
+            border-bottom: 2px solid #413e3e;
+        }
+
+        .p-datatable-tbody>tr {
+            background-color: transparent;
+            color: rgba($white, 0.9);
+
+            &:nth-child(odd) {
+                background-color: #393939b7;
+                /* Cambia el color de fondo para los tr impares */
+            }
+        }
+    }
+
+    .p-inputtext {
+        background-color: transparent;
+        color: rgba($white, 0.9);
+        border: 1px solid #4a4a4a;
+    }
+
+    .p-paginator {
+        background-color: transparent;
+
+        .p-paginator-pages {
+            .p-paginator-page.p-highlight {
+                background-color: $primary-color;
+                color: rgba($white, 0.9);
+                border-radius: 20%;
+            }
+
+            .p-paginator-page:not(.p-highlight):hover {
+                background: #e080784b;
+                border-radius: 20%;
+                color: rgba($white, 0.9);
+            }
+        }
+
+        .p-paginator-first:not(.p-disabled):not(.p-highlight):hover, 
+        .p-paginator-prev:not(.p-disabled):not(.p-highlight):hover,
+        .p-paginator-next:not(.p-disabled):not(.p-highlight):hover,
+        .p-paginator-last:not(.p-disabled):not(.p-highlight):hover {
+            background: #e080784b;
+            border-radius: 20%;
+            color: rgba($white, 0.9);
+        }
+    }
+
+    .p-dropdown {
+        background-color: transparent;
+
+        .p-dropdown-trigger {
+            background-color: transparent;
+        }
+
+        .p-inputtext {
+            border: none;
+        }
+    }
+
+    .p-dropdown-panel .p-dropdown-items {
+        background-color: #2f2f2f;
+
+        .p-dropdown-item:not(.p-highlight):not(.p-disabled).p-focus {
+            background: #3c4d60;
+        }
+    }
+
+    .modal-body {
+        .needs-validation {
+            .form-group {
+                textarea {
+                    border-color: $dark-border;
+                    color: $white-5;
+                }
+            }
+        }
+    }
 
     .table-responsive {
         th {
@@ -563,14 +640,15 @@ body {
 
     .p-fluid {
         box-shadow: none;
+
         p-chips {
-            ul {              
-              li{
-                color: $dark-body;
-              }
+            ul {
+                li {
+                    color: $dark-body;
+                }
 
             }
-          }
+        }
     }
 
     .custom-datatable {
@@ -1535,25 +1613,27 @@ body {
         }
     }
 
-    .authentication-box{
-        .card-right{
-            .card{
+    .authentication-box {
+        .card-right {
+            .card {
                 background-color: $white;
 
-                ul{
+                ul {
                     border-color: $dark-border-color;
-                    li{
-                        a{
+
+                    li {
+                        a {
                             background-color: transparent;
                             color: $dark-font !important;
-                            &.active{
+
+                            &.active {
                                 color: $primary-color !important;
                             }
                         }
 
-                        .auth-form{
-                            .form-terms{
-                                .forgot-pass{
+                        .auth-form {
+                            .form-terms {
+                                .forgot-pass {
                                     color: $primary-color !important;
                                 }
                             }
