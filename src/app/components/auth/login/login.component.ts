@@ -23,15 +23,15 @@ export class LoginComponent implements OnInit {
 
   owlcarousel = [
     {
-      title: "Welcome to Multikart",
+      title: "Welcome to Pistons Fuel Power",
       desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy.",
     },
     {
-      title: "Welcome to Multikart",
+      title: "Welcome to Pistons Fuel Power",
       desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy.",
     },
     {
-      title: "Welcome to Multikart",
+      title: "Welcome to Pistons Fuel Power",
       desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy.",
     }
   ]

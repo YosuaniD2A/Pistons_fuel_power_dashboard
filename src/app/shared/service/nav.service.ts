@@ -53,8 +53,11 @@ export class NavService {
 				// { path: '/users/create-user', title: 'Create User', type: 'link' },
 			]
 		},
+		{
+			path: '/sales/orders', title: 'Gallery', icon: 'image', type: 'link', badgeType: 'primary', active: false
+		},
 		// {
-		// 	title: 'Overview', icon: 'bar-chart', type: 'sub', active: false, children: [
+		// 	title: 'Gallery', icon: 'bar-chart', type: 'link', active: false, children: [
 		// 		{ path: '/reports', title: 'Reports', type: 'link' },
 		// 		{ path: '/sales/orders', title: 'Sales', type: 'link' }
 		// 	]
@@ -65,7 +68,7 @@ export class NavService {
 		// 	]
 		// },
 		{
-			title: 'Login', path: '/auth/login', icon: 'log-in', type: 'link', active: false
+			title: 'Logout', path: '/auth/login', icon: 'log-in', type: 'link', active: false
 		}
 	]
 	// Array

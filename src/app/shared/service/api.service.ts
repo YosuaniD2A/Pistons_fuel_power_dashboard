@@ -51,6 +51,14 @@ export class ApiService {
     return lastValueFrom(this.http.get<any>(`${this.baseUrl}/variants/getAllProductbyVariants`));
   }
 
+  getProduct(id: number): Promise<any> {
+    return lastValueFrom(this.http.get<any>(`${this.baseUrl}/products/getProduct/${id}`));
+  }
+
+  updateProduct(id: number, data: any): Promise<any> {
+    return lastValueFrom(this.http.put<any>(`${this.baseUrl}/products/updateProduct/${id}`, data));
+  }
+
   //-------------------- Variant section -----------------------------------------
 
   addVariant(data: any): Promise<any> {
@@ -61,10 +69,18 @@ export class ApiService {
     return lastValueFrom(this.http.delete<any>(`${this.baseUrl}/variants/deleteVariant/${id}`));
   }
 
+  getImagesByVariantId(id: number): Promise<any> {
+    return lastValueFrom(this.http.get<any>(`${this.baseUrl}/variants/getImagesByVariantId/${id}`));
+  }
+
   //-------------------- Image section -----------------------------------------
 
   addImage(data: any): Promise<any> {
     return lastValueFrom(this.http.post<any>(`${this.baseUrl}/images/addImage`, data));
+  }
+
+  updateImage(id: number, data: any): Promise<any> {
+    return lastValueFrom(this.http.put<any>(`${this.baseUrl}/images/updateImage/${id}`, data));
   }
 
    //-------------------- Relationship Variant-Image section -----------------------------------------

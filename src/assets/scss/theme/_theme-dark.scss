@@ -2382,6 +2382,10 @@ body {
     button {
         &.close {
             color: $white;
+            background-color: transparent;
+            border-radius: 100%;
+            border: 1px solid #4a4a4a;
+            padding: 5px 8px;
         }
     }
 
@@ -2917,6 +2921,12 @@ body {
                 }
             }
         }
+    }
+
+    .needs-validation .custom-select{
+        background-color: transparent;
+        border-color: rgba($dark-border, 0.85);
+        border-radius: 5px;
     }
 
     .addcart_btm_popup {

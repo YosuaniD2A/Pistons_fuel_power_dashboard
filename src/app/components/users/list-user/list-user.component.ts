@@ -6,6 +6,7 @@ import { AuthService } from 'src/app/shared/service/auth.service';
 import { TableService } from 'src/app/shared/service/table.service';
 import { UserListDB, USERLISTDB } from 'src/app/shared/tables/list-users';
 import { MessageService } from 'primeng/api';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-list-user',
@@ -24,25 +25,35 @@ export class ListUserComponent implements OnInit {
   public searchText;
   total$: Observable<number>;
 
-  constructor(public service: TableService, private authService: AuthService, private messageService: MessageService) {
+  users!: any[];
+  selectedUsers!: any;
+  userData: any = {};
+
+  public closeResult: string;
+  itemSaved: boolean = false;
+
+  constructor(
+    public service: TableService,
+    private authService: AuthService,
+    private messageService: MessageService,
+    private modalService: NgbModal) {
   }
 
   async ngOnInit() {
     this.tableItem$ = this.service.tableItem$;
     this.total$ = this.service.total$;
     await this.loadUsers();
+    this.users = this.usersList;
     this.service.setUserData(this.usersList)
   }
 
   async loadUsers() {
     const users = await this.getAllUsers();
-    this.usersList = users.data;   
-    console.log(this.usersList);
-     
+    this.usersList = users.data;
   }
 
   async getAllUsers() {
-    return await this.authService.getUser();
+    return await this.authService.getUsers();
   }
 
   @ViewChildren(NgbdSortableHeader) headers: QueryList<NgbdSortableHeader>;
@@ -60,9 +71,62 @@ export class ListUserComponent implements OnInit {
 
   }
 
-  delete(id){
+  async open(content, id: number) {
+
+    this.userSelected = id
+    try {
+      const result = await this.authService.getUser(id);
+      
+      this.userData.name = result.data[0].name;
+      this.userData.lastname = result.data[0].lastname;
+      this.userData.email = result.data[0].email;
+      this.userData.permission = result.data[0].permission;
+      this.userData.newpassword = '';
+
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: `Se produjo un error: ${error.message}` });
+    }
+
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then((result) => {
+      this.closeResult = `Closed with: ${result}`;
+    }, (reason) => {
+      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      this.resetValues();
+
+      if (this.itemSaved)
+        this.reload();
+    });
+  }
+
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return `with: ${reason}`;
+    }
+  }
+
+  async saveData(){
+    try {
+      const result = await this.authService.updateUser(this.userSelected, this.userData);        
+      if (result.data.affectedRows !== 0) {
+        this.messageService.add({ severity: 'success', summary: 'Usuario editado', detail: `Se actualizo el usuario con ID: ${this.userSelected}` });
+        this.itemSaved = true;
+      }
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: `Se produjo un error: ${error.message}` });
+    }    
+  }
+
+  resetValues(){
+    this.userSelected = 0;
+    this.userData = {}; 
+  }
+
+  delete(id) {
     console.log(id);
-    
   }
 
   showConfirm(id: number) {
@@ -100,7 +164,7 @@ export class ListUserComponent implements OnInit {
   reload() {
     window.location.reload();
   }
-  
+
 
 }
 

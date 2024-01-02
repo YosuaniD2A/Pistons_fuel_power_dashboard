@@ -21,8 +21,16 @@ export class AuthService {
     return lastValueFrom(this.httpClient.post<any>(`${this.baseUrl}/auth/login`, data));
   }
 
-  getUser(): Promise<any> {
+  getUser(id): Promise<any> {
+    return lastValueFrom(this.httpClient.get<any>(`${this.baseUrl}/auth/getUser/${id}`));
+  }
+
+  getUsers(): Promise<any> {
     return lastValueFrom(this.httpClient.get<any>(`${this.baseUrl}/auth/getUsers`));
+  }
+
+  updateUser(id, data): Promise<any> {
+    return lastValueFrom(this.httpClient.put<any>(`${this.baseUrl}/auth/updateUser/${id}`, data));
   }
 
   deleteUser(id): Promise<any> {
