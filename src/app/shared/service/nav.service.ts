@@ -54,7 +54,7 @@ export class NavService {
 			]
 		},
 		{
-			path: '/sales/orders', title: 'Gallery', icon: 'image', type: 'link', badgeType: 'primary', active: false
+			path: '/gallery/image-list', title: 'Gallery', icon: 'image', type: 'link', badgeType: 'primary', active: false
 		},
 		// {
 		// 	title: 'Gallery', icon: 'bar-chart', type: 'link', active: false, children: [

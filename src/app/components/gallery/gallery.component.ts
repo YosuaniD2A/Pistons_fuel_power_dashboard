@@ -9,117 +9,77 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'app-digital-collection',
-  templateUrl: './digital-collection.component.html',
-  styleUrls: ['./digital-collection.component.scss'],
+  selector: 'app-gallery',
+  templateUrl: './gallery.component.html',
+  styleUrls: ['./gallery.component.scss'],
   providers: [TableService, DecimalPipe, MessageService],
 })
-export class DigitalCollectionComponent implements OnInit {
+export class GalleryComponent {
 
-  tableItem$: Observable<any[]>;
-  total$: Observable<number>;
   public closeResult: string;
   public collectionsList: any[] = [];
+  public productList: any[] = [];
   visible: boolean = false;
   itemSaved: boolean = false;
   collectionSelected: number;
 
   modelType: string = "add"
-  modelTitle: string = "Add Collection";
+  modelTitle: string = "Add & link image";
   collectionData: any = {};
+  imageData: any = {};
 
   collections!: any[];
+  products!: any[];
+  selectedProduct!: any;
   selectedCollections!: any;
 
   constructor(
     public apiService: ApiService,
-    public service: TableService,
     private modalService: NgbModal,
     private messageService: MessageService,
   ) { }
 
   async ngOnInit() {
-    this.tableItem$ = this.service.tableItem$;
-    this.total$ = this.service.total$;
     await this.loadCollections();
-    // await this.loadProductsForCollections();
-    console.log(this.collectionsList);
     this.collections = this.collectionsList;
-    this.service.setUserData(this.collectionsList)
+    await this.loadProducts();
+    this.products = this.productList;
+    // console.log(this.collections);
+    console.log(this.products);
   }
 
   async loadCollections() {
     const collections = await this.getAllCollections();
     this.collectionsList = collections.data;    
-    console.log(this.collectionsList);
-    
+     
   }
 
-  // async loadCollections() {
-  //   try {
-  //     const collections = await this.getAllCollections();
-  //     this.collectionsList = collections.data;
+
+  async loadProducts() {
+    const products = await this.apiService.getAllProductsByVariants();
   
-  //     // Para cada colección, obtener la cantidad de productos
-  //     const promises = this.collectionsList.map(async (collection) => {
-  //       try {
-  //         const result = await this.apiService.getAllMyProducts(collection.id);
-  //         collection.products = result.data[0].count;
-  //       } catch (error) {
-  //         // Manejar el error de la llamada
-  //         console.error(`Error para la colección ${collection.id}: ${error.message}`);
-  //       }
-  //     });
+    // Utilizar un mapa para almacenar objetos únicos por productId
+    const uniqueProductsMap = products.data.reduce((map, elem) => {
+      const productId = elem.productId;
   
-  //     // Esperar a que todas las llamadas se completen antes de continuar
-  //     await Promise.all(promises);
+      // Si aún no existe un objeto para este productId, agrégalo al mapa
+      if (!map.has(productId)) {
+        map.set(productId, { productId, title: elem.title, collection: elem.collection, imagesUrl: elem.imagesUrl.split(',') });
+      }
   
-  //   } catch (error) {
-  //     console.error(`Error al cargar colecciones: ${error.message}`);
-  //   }
-  // }
+      return map;
+    }, new Map<string, { productId: string, title: string, collection: string, imagesUrl: string[] }>());
+  
+    // Extraer los valores del mapa para obtener un arreglo de objetos únicos
+    this.productList = Array.from(uniqueProductsMap.values());
+
+  }
 
   async getAllCollections() {
     return await this.apiService.getAllCollections();
   }
 
-  async loadProductsForCollections() {
-    const promises = this.collectionsList.map(async (collection) => {
-      try {
-        const result = await this.apiService.getAllMyProducts(collection.id);
-        collection.products = result.data[0].count;
-      } catch (error) {
-        // Manejar el error de la llamada
-        console.error(`Error para la colección ${collection.id}: ${error.message}`);
-      }
-    });
-  
-    await Promise.all(promises);
-  }
-
-  // async loadProductsForCollections() {
-  //   for (const collection of this.collectionsList) {
-  //     const result = await this.apiService.getAllMyProducts(collection.id);
-      
-  //     collection.products = result.data[0].count;
-  //   }
-
-  // }
-
   @ViewChildren(NgbdSortableHeader) headers: QueryList<NgbdSortableHeader>;
-
-  onSort({ column, direction }: SortEvent) {
-    // resetting other headers
-    this.headers.forEach((header) => {
-      if (header.sortable !== column) {
-        header.direction = '';
-      }
-    });
-
-    this.service.sortColumn = column;
-    this.service.sortDirection = direction;
-
-  }
 
   async open(content, id: number) {
     if(id !== 0){
@@ -141,7 +101,7 @@ export class DigitalCollectionComponent implements OnInit {
       this.modelType = "add";
     } 
 
-    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then((result) => {
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', centered: true }).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
@@ -162,7 +122,7 @@ export class DigitalCollectionComponent implements OnInit {
     }
   }
 
-  async saveCollection() {
+  async addImage() {
     if (this.modelType === "add") {
       const requiredProperties = ['name', 'description', 'img_url'];
       const missingProperties = requiredProperties.filter(prop => !this.collectionData[prop]);
@@ -194,12 +154,6 @@ export class DigitalCollectionComponent implements OnInit {
       }
     }
   }
-
-  // async getMyProducts(id) {
-  //   const result = await this.apiService.getAllMyProducts(id);
-  //   console.log(result);
-    
-  // }
 
   showConfirm(id: number) {
     this.collectionSelected = id;
@@ -243,8 +197,5 @@ export class DigitalCollectionComponent implements OnInit {
   reload() {
     window.location.reload();
   }
-//  ------------------------------------------------------------------------------------------------------------------
-
-
 
 }

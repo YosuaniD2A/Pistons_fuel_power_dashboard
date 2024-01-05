@@ -119,7 +119,7 @@
                                         <th pSortableColumn="title">Title<p-sortIcon field="title"></p-sortIcon></th>
                                         <th pSortableColumn="description" style="min-width:200px">Description<p-sortIcon
                                                 field="description"></p-sortIcon></th>
-                                        <th pSortableColumn="sku">Status<p-sortIcon field="sku"></p-sortIcon></th>
+                                        <th pSortableColumn="sale">Status<p-sortIcon field="sku"></p-sortIcon></th>
                                         <th pSortableColumn="collections" style="width:200px">Collections<p-sortIcon
                                                 field="collections"></p-sortIcon></th>
                                         <th>Type</th>
@@ -163,6 +163,9 @@
                                                     (click)="showConfirm(product.variantId)"></i></a>
                                         </td>
                                     </tr>
+                                </ng-template>
+                                <ng-template pTemplate="paginatorright">
+                                    <p-button type="button" styleClass="p-button-secondary rounded" [disabled]="selectedProducts.length == 0" (click)="showConfirmAllDelete(selectedProducts)">Delete all selected</p-button>
                                 </ng-template>
                             </p-table>
                         </div>
@@ -311,6 +314,27 @@
                 <div class="p-fluid d-flex gap-3">
                     <div class="col-6">
                         <button type="button" pButton (click)="onConfirm()" label="Yes"
+                            class="p-button-success rounded"></button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onReject()" label="No"
+                            class="p-button-secondary rounded"></button>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </p-toast>
+    <p-toast position="bottom-center" key="confirmAllDelete" (onClose)="onReject()" [baseZIndex]="5000">
+        <ng-template let-message pTemplate="message">
+            <div class="flex flex-column" style="flex: 1">
+                <div class="text-center">
+                    <i class="pi pi-exclamation-triangle" style="font-size: 3rem"></i>
+                    <h4 class="text-dark-emphasis">{{message.summary}}</h4>
+                    <p class="text-light-emphasis">{{message.detail}}</p>
+                </div>
+                <div class="p-fluid d-flex gap-3">
+                    <div class="col-6">
+                        <button type="button" pButton (click)="onConfirmAll()" label="Yes"
                             class="p-button-success rounded"></button>
                     </div>
                     <div class="col-6">

@@ -311,7 +311,7 @@ export class DigitalAddComponent implements OnInit {
         type: this.getNameFromCode(this.productData.type),
         price: this.productData.price,
         category: this.productData.category,
-        sale: (this.productData.onSale == true) ? 1 : 0,
+        sale: (this.productData.onSale === "true") ? 1 : 0,
         tags: Array.from(this.productData.tags).join(','),
         collections_id: this.productData.collection,
         discounts_id: this.productData.discount,

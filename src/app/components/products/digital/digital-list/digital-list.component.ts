@@ -29,7 +29,7 @@ export class DigitalListComponent implements OnInit {
   productData: any = {};
 
   products!: any[];
-  selectedProducts!: any;
+  selectedProducts: any[] = [];
   itemSaved: boolean = false;
   onSale: string = "true";
 
@@ -56,6 +56,7 @@ export class DigitalListComponent implements OnInit {
     await this.loadProducts();
     this.products = this.productList;
     console.log(this.products);
+    
 
     this.service.setUserData(this.productList)
 
@@ -123,6 +124,35 @@ export class DigitalListComponent implements OnInit {
     if (!this.visible) {
       this.messageService.add({ key: 'confirm', sticky: true, severity: 'warn', summary: `You are about to delete this product, are you sure ?`, detail: 'Confirm to proceed' });
       this.visible = true;
+    }
+  }
+
+  showConfirmAllDelete(selectedProducts: any) {
+    const amount = selectedProducts.length;
+
+    if (!this.visible) {
+      this.messageService.add({ key: 'confirmAllDelete', sticky: true, severity: 'warn', summary: `You are about to delete ${amount} products, are you sure ?`, detail: 'Confirm to proceed' });
+      this.visible = true;
+    }
+  }
+
+  async onConfirmAll(){
+    try {
+
+     for (let index = 0; index < this.selectedProducts.length; index++) {
+        const result = await await this.apiService.deleteVariant(this.selectedProducts[index].variantId);       
+      }
+
+      this.messageService.add({ severity: 'success', summary: 'Productos eliminados', detail: `Se eliminaron los productos correctamente`});
+      this.messageService.clear('confirm');
+        this.visible = false;
+
+        setTimeout(() => {
+          this.reload();
+        }, 1000);
+
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: `Se produjo un error: ${error.message}` });
     }
   }
 
