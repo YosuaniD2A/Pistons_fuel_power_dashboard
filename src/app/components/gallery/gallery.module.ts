@@ -8,6 +8,7 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ChipsModule } from 'primeng/chips';
 import { DropdownModule } from 'primeng/dropdown';
+import { ButtonModule } from 'primeng/button';
 
 
 
@@ -23,7 +24,8 @@ import { DropdownModule } from 'primeng/dropdown';
     TableModule,
     ToastModule,
     ChipsModule,
-    DropdownModule
+    DropdownModule,
+    ButtonModule
   ]
 })
 export class GalleryModule { }

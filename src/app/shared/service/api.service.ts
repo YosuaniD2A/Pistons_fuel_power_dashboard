@@ -89,6 +89,23 @@ export class ApiService {
     return lastValueFrom(this.http.post<any>(`${this.baseUrl}/images/addLinkImage`, data));
   }
 
+  //---------------------- Gallery section -------------------------------------------------------------
+
+  addImageGallery(data: any): Promise<any> {
+    return lastValueFrom(this.http.post<any>(`${this.baseUrl}/gallery/addImage`, data));
+  }
+
+  deleteImageGallery(id: number): Promise<any> {
+    return lastValueFrom(this.http.delete<any>(`${this.baseUrl}/gallery/deleteImage/${id}`));
+  }
+
+  getImageGallery(id: number): Promise<any> {
+    return lastValueFrom(this.http.get<any>(`${this.baseUrl}/gallery/getImage/${id}`));
+  }
+
+  getAllImagesGallery(): Promise<any> {
+    return lastValueFrom(this.http.get<any>(`${this.baseUrl}/gallery/getAllImages`));
+  }
 
 
 

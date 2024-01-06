@@ -17,21 +17,21 @@ import { MessageService } from 'primeng/api';
 export class GalleryComponent {
 
   public closeResult: string;
-  public collectionsList: any[] = [];
+  public imagesList: any[] = [];
   public productList: any[] = [];
   visible: boolean = false;
   itemSaved: boolean = false;
-  collectionSelected: number;
+  imageSelected: number;
 
   modelType: string = "add"
   modelTitle: string = "Add & link image";
-  collectionData: any = {};
   imageData: any = {};
 
-  collections!: any[];
+  images!: any[];
   products!: any[];
   selectedProduct!: any;
-  selectedCollections!: any;
+  selectedImages!: any;
+  selectedImageDetail!: any;
 
   constructor(
     public apiService: ApiService,
@@ -40,17 +40,17 @@ export class GalleryComponent {
   ) { }
 
   async ngOnInit() {
-    await this.loadCollections();
-    this.collections = this.collectionsList;
+    await this.loadImages();
+    // this.images = this.imagesList;
     await this.loadProducts();
-    this.products = this.productList;
-    // console.log(this.collections);
+    // this.products = this.productList;
+    console.log(this.images);
     console.log(this.products);
   }
 
-  async loadCollections() {
-    const collections = await this.getAllCollections();
-    this.collectionsList = collections.data;    
+  async loadImages() {
+    const images = await this.getAllImages();
+    this.images = images.data;    
      
   }
 
@@ -71,12 +71,12 @@ export class GalleryComponent {
     }, new Map<string, { productId: string, title: string, collection: string, imagesUrl: string[] }>());
   
     // Extraer los valores del mapa para obtener un arreglo de objetos únicos
-    this.productList = Array.from(uniqueProductsMap.values());
+    this.products = Array.from(uniqueProductsMap.values());
 
   }
 
-  async getAllCollections() {
-    return await this.apiService.getAllCollections();
+  async getAllImages() {
+    return await this.apiService.getAllImagesGallery();
   }
 
   @ViewChildren(NgbdSortableHeader) headers: QueryList<NgbdSortableHeader>;
@@ -84,14 +84,13 @@ export class GalleryComponent {
   async open(content, id: number) {
     if(id !== 0){
       this.modelType = "update";
-      this.modelTitle = "Update Collection"; 
-      this.collectionSelected = id
+      this.modelTitle = "Update image"; 
+      this.imageSelected = id
       try {
-        const result = await this.apiService.getCollection(id);
+        const result = await this.apiService.getImageGallery(id);
 
-        this.collectionData.name = result.data[0].name;
-        this.collectionData.description = result.data[0].description;
-        this.collectionData.img_url = result.data[0].img_url;
+        this.imageData.img_url = result.data[0].img_url;
+        
         
       } catch (error) {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: `Se produjo un error: ${error.message}` });
@@ -112,6 +111,22 @@ export class GalleryComponent {
     });
   }
 
+  async openDetails(details, image) {
+
+    const productLinked = this.products.find(prod => prod.productId == image.products_id);
+    this.selectedImageDetail = { ...image, prodTitle: productLinked.title, prodImages: productLinked.imagesUrl};
+
+    console.log(this.selectedImageDetail);
+    
+
+    this.modalService.open(details, { ariaLabelledBy: 'modal-basic-title', centered: true, size: 'lg' }).result.then((result) => {
+      this.closeResult = `Closed with: ${result}`;
+    }, (reason) => {
+      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      this.resetValues();
+    });
+  }
+
   private getDismissReason(reason: any): string {
     if (reason === ModalDismissReasons.ESC) {
       return 'by pressing ESC';
@@ -123,9 +138,15 @@ export class GalleryComponent {
   }
 
   async addImage() {
+    if(this.selectedProduct){
+      this.imageData.collection = this.selectedProduct.collection;
+      this.imageData.products_id = this.selectedProduct.productId;
+    }
+
+    console.log(this.imageData);
     if (this.modelType === "add") {
-      const requiredProperties = ['name', 'description', 'img_url'];
-      const missingProperties = requiredProperties.filter(prop => !this.collectionData[prop]);
+      const requiredProperties = ['img_url', 'collection', 'products_id'];
+      const missingProperties = requiredProperties.filter(prop => !this.imageData[prop]);
 
       if (missingProperties.length > 0) {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: `Por favor, complete los siguientes campos obligatorios: ${missingProperties.join(', ')}` });
@@ -133,43 +154,48 @@ export class GalleryComponent {
       }
 
       try {
-        const result = await this.apiService.addCollection(this.collectionData);
+        const result = await this.apiService.addImageGallery(this.imageData);
         if (result.data.insertId !== 0) {
-          this.messageService.add({ severity: 'success', summary: 'Colleccion guardada', detail: `Se registro una nueva Coleccion con ID: ${result.data.insertId}` });
+          this.messageService.add({ severity: 'success', summary: 'Imagen guardada', detail: `Se registro una nueva imagen con ID: ${result.data.insertId}` });
           this.itemSaved = true;
         }
       } catch (error) {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: `Se produjo un error: ${error.message}` });
       }
     } else {
-      try {
-        this.collectionData.img_url = this.collectionData.img_url.replace(/dl=0/g, 'dl=1');
-        const result = await this.apiService.updateCollection(this.collectionSelected, this.collectionData);        
-        if (result.data.affectedRows !== 0) {
-          this.messageService.add({ severity: 'success', summary: 'Colleccion editada', detail: `Se actualizo la Coleccion con ID: ${this.collectionSelected}` });
-          this.itemSaved = true;
-        }
-      } catch (error) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: `Se produjo un error: ${error.message}` });
-      }
+    //   try {
+    //     this.collectionData.img_url = this.collectionData.img_url.replace(/dl=0/g, 'dl=1');
+    //     const result = await this.apiService.updateCollection(this.collectionSelected, this.collectionData);        
+    //     if (result.data.affectedRows !== 0) {
+    //       this.messageService.add({ severity: 'success', summary: 'Colleccion editada', detail: `Se actualizo la Coleccion con ID: ${this.collectionSelected}` });
+    //       this.itemSaved = true;
+    //     }
+    //   } catch (error) {
+    //     this.messageService.add({ severity: 'error', summary: 'Error', detail: `Se produjo un error: ${error.message}` });
+    //   }
     }
   }
 
+
+  updateImageText() {
+    this.imageData.img_url = this.imageData.img_url.replace(/dl=0/g, 'dl=1');
+  }
+
   showConfirm(id: number) {
-    this.collectionSelected = id;
+    this.imageSelected = id;
     if (!this.visible) {
-      this.messageService.add({ key: 'confirm', sticky: true, severity: 'warn', summary: `You are about to delete this collection, are you sure ?`, detail: 'Confirm to proceed' });
+      this.messageService.add({ key: 'confirm', sticky: true, severity: 'warn', summary: `You are about to delete this image, are you sure ?`, detail: 'Confirm to proceed' });
       this.visible = true;
     }
   }
 
   async onConfirm() {
     try {
-      const result = await this.apiService.deleteCollection(this.collectionSelected);
+      const result = await this.apiService.deleteImageGallery(this.imageSelected);
       console.log(result);
 
       if (result.data.affectedRows !== 0) {
-        this.messageService.add({ severity: 'success', summary: 'Coleccion eliminada', detail: `Se elimino la colecion correctamente` });
+        this.messageService.add({ severity: 'success', summary: 'Imagen eliminada', detail: `Se elimino la imagen correctamente` });
         this.messageService.clear('confirm');
         this.visible = false;
 
@@ -188,14 +214,16 @@ export class GalleryComponent {
   }
 
   resetValues(){
-    this.collectionSelected = 0;
+    this.imageSelected = 0;
     this.modelType = "add";
-    this.modelTitle = "Add Collection";
-    this.collectionData = {}; 
+    this.modelTitle = "Add & link image";
+    this.imageData = {}; 
+    this.selectedImageDetail = {};
   }
 
   reload() {
-    window.location.reload();
+    // window.location.reload();
+    this.loadImages();
   }
 
 }

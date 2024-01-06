@@ -8,9 +8,9 @@
                 </div>
                 <div class="card-body">
                     <div class="card">
-                        <p-table #dt [value]="collections" [(selection)]="selectedCollections" [scrollable]="true"
-                            scrollHeight="400px" dataKey="name" [tableStyle]="{'min-width': '50rem'}"
-                            [globalFilterFields]="['name']">
+                        <p-table #dt [value]="images" [(selection)]="selectedImages" [scrollable]="true"
+                            scrollHeight="400px" dataKey="id" [tableStyle]="{'min-width': '50rem'}"
+                            [globalFilterFields]="['collection']">
                             <ng-template pTemplate="caption">
                                 <div class="table-header d-flex justify-content-between">
                                     <span class="p-input-icon-left">
@@ -22,7 +22,7 @@
 
                                     <button type="button" class="btn btn-primary" data-toggle="modal"
                                         data-original-title="test" data-target="#exampleModal"
-                                        (click)="open(content, 0)">Add Collection</button>
+                                        (click)="open(content, 0)">Add image</button>
                                 </div>
                             </ng-template>
                             <ng-template pTemplate="header">
@@ -31,28 +31,29 @@
                                         <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                                     </th>
                                     <th>Image</th>
-                                    <th>Name</th>
-                                    <th>Description</th>
+                                    <th>URL</th>
+                                    <th>Collection</th>
                                     <th>Actions</th>
                                 </tr>
                             </ng-template>
-                            <ng-template pTemplate="body" let-collection>
+                            <ng-template pTemplate="body" let-image>
                                 <tr>
                                     <td>
-                                        <p-tableCheckbox [value]="collection"></p-tableCheckbox>
+                                        <p-tableCheckbox [value]="image"></p-tableCheckbox>
                                     </td>
                                     <td>
                                         <div class="frame">
-                                            <img [src]="collection.img_url" class="imgTable" style="width: 100%"
+                                            <img [src]="image.img_url" class="imgTable" style="width: 100%"
                                                 onerror="this.onerror=null; this.src='../assets/images/dashboard/product/1.jpg';">
                                         </div>
                                     </td>
-                                    <td>{{collection.name}}</td>
-                                    <td>{{collection.description}}</td>
-                                    <td><a href="javascript:void(0)" class="action-button"><i class='fa fa-edit f-12'
-                                                (click)="open(content, collection.id)"></i></a>&nbsp;
+                                    <td>{{image.img_url}}</td>
+                                    <td>{{image.collection}}</td>
+                                    <td>
+                                        <a href="javascript:void(0)" class="action-button"><i class='fa fa-eye f-12'
+                                                (click)="openDetails(details, image)"></i></a>&nbsp;
                                         <a href="javascript:void(0)" class="action-button"><i class="fa fa-trash-o"
-                                                (click)="showConfirm(collection.id)"></i></a>
+                                                (click)="showConfirm(image.id)"></i></a>
                                     </td>
                                 </tr>
                             </ng-template>
@@ -75,7 +76,7 @@
                     <div class="form-group">
                         <label for="validationCustom01" class="mb-1">Image URL:</label>
                         <input class="form-control" id="validationCustom01" type="text"
-                            [(ngModel)]="imageData.url" [ngModelOptions]="{standalone: true}">
+                            [(ngModel)]="imageData.img_url" [ngModelOptions]="{standalone: true}" (blur)="updateImageText()">
                     </div>
                     <div class="form-group">
                         <p-dropdown [options]="products" [(ngModel)]="selectedProduct" [ngModelOptions]="{standalone: true}" optionLabel="title" [filter]="true" filterBy="title" [showClear]="true" placeholder="Select a product">
@@ -95,13 +96,14 @@
                             </ng-template>
                         </p-dropdown>
                     </div>
-                    <div class="form-group">
-                        <span class="mb-1">Collection: <strong>{{selectedProduct?.collection}}</strong></span>
+                    <div class="row">
+                        <span class="col-6 mb-1">Collection: <strong>{{selectedProduct?.collection}}</strong></span>
+                        <span class="col-6 mb-1">Product ID: <strong>{{selectedProduct?.productId}}</strong></span>
                     </div> 
                 </div>
             </form>
             <div class="imagesProducts p-3 d-flex justify-content-between align-items-center">
-                <img class="thumblainImage" [src]="imageData.url || 'assets/images/12.jpg'"  alt="">
+                <img class="thumblainImage" [src]="imageData.img_url || 'assets/images/12.jpg'"  alt="">
                 <img class="" style="width: 50px;" src='assets/images/plus.png'  alt="">
                 <div>
                     <ng-container *ngIf="selectedProduct?.imagesUrl?.length > 0; else noImages">
@@ -117,6 +119,38 @@
             <button type="button" class="btn btn-primary" (click)="addImage()">Add & Link</button>
             <button class="btn btn-secondary" type="button" data-dismiss="modal"
                 (click)="modal.dismiss('Cross click')">Close</button>
+        </div>
+    </ng-template>
+    <ng-template #details let-modal>
+        <div class="modal-header">
+            <h5 class="modal-title f-w-600" id="exampleModalLabel">Details</h5>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                <span aria-hidden="true">X</span>
+            </button>
+        </div>
+        <div class="modal-body details">
+            <div class="imagesProducts overflow-x-auto p-3 d-flex justify-content-between align-items-center">
+                <img class="thumblainImage" [src]="selectedImageDetail.img_url || 'assets/images/12.jpg'"  alt="">
+                <img class="" style="width: 50px;" src='assets/images/plus.png'  alt="">
+                <div class="d-flex gap-2">
+                    <img class="thumblainImage" *ngFor="let img of selectedImageDetail?.prodImages" [src]="img || 'assets/images/12.jpg'" alt="">
+                </div>
+            </div>
+        </div>
+        <div class="modal-foot d-flex">
+            <div class="flex-fill">
+                <div class="d-flex flex-column gap-2">
+                    <span>Image ID: <strong>{{selectedImageDetail.id}}</strong></span>
+                    <span>Image collection: <strong>{{selectedImageDetail.collection}}</strong></span>
+                </div>
+            </div>
+            <div class="flex-fill">
+                <div class="d-flex flex-column gap-2">
+                    <span>Product ID: <strong>{{selectedImageDetail.products_id}}</strong></span>
+                    <span>Product title: <strong>{{selectedImageDetail.prodTitle}}</strong></span>
+                    <span>Product collection: <strong>{{selectedImageDetail.collection}}</strong></span>
+                </div>
+            </div>
         </div>
     </ng-template>
     <p-toast position="bottom-right"></p-toast>

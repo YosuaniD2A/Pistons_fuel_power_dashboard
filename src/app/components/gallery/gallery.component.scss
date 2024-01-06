@@ -6,3 +6,16 @@
 .thumblainImage {
     width: 110px;
 }
+
+.details{
+    .thumblainImage {
+        height: 250px;
+        width: auto;
+    }
+}
+
+.modal-foot {
+    // padding: calc(var(--bs-modal-padding) - var(--bs-modal-footer-gap) * 0.5);
+    padding: 20px;
+    border-top: var(--bs-modal-footer-border-width) solid var(--bs-modal-footer-border-color);
+}

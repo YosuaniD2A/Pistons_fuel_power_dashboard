@@ -332,6 +332,9 @@ input[type="file"] {
     &.fa-edit {
       color: #22af47;
     }
+    &.fa-eye {
+      color: #22af47;
+    }
 
     &.fa-trash-o {
       color: #ff5370;
@@ -2218,6 +2221,9 @@ div {
 
     tr {
       .fa-edit {
+        color: #22af47;
+      }
+      .fa-eye {
         color: #22af47;
       }
 
