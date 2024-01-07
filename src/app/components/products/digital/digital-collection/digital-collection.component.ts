@@ -16,8 +16,6 @@ import { MessageService } from 'primeng/api';
 })
 export class DigitalCollectionComponent implements OnInit {
 
-  tableItem$: Observable<any[]>;
-  total$: Observable<number>;
   public closeResult: string;
   public collectionsList: any[] = [];
   visible: boolean = false;
@@ -39,20 +37,12 @@ export class DigitalCollectionComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
-    this.tableItem$ = this.service.tableItem$;
-    this.total$ = this.service.total$;
     await this.loadCollections();
-    // await this.loadProductsForCollections();
-    console.log(this.collectionsList);
-    this.collections = this.collectionsList;
-    this.service.setUserData(this.collectionsList)
   }
 
   async loadCollections() {
     const collections = await this.getAllCollections();
-    this.collectionsList = collections.data;    
-    console.log(this.collectionsList);
-    
+    this.collections = collections.data;        
   }
 
   // async loadCollections() {
@@ -241,7 +231,7 @@ export class DigitalCollectionComponent implements OnInit {
   }
 
   reload() {
-    window.location.reload();
+    this.loadCollections();
   }
 //  ------------------------------------------------------------------------------------------------------------------
 

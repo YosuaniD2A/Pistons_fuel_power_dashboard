@@ -19,8 +19,6 @@ export class DigitalListComponent implements OnInit {
 
   public closeResult: string;
   visible: boolean = false;
-  tableItem$: Observable<any[]>;
-  total$: Observable<number>;
   public productList: any[] = [];
   types: any[] = [];
   discounts: any[] = [];
@@ -50,15 +48,8 @@ export class DigitalListComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.tableItem$ = this.service.tableItem$;
-    this.total$ = this.service.total$;
     await this.getAllCollections();
-    await this.loadProducts();
-    this.products = this.productList;
-    console.log(this.products);
-    
-
-    this.service.setUserData(this.productList)
+    await this.loadProducts();    
 
     this.types = [
       { name: 'T-shirt', code: 'TSA', active: true },
@@ -90,7 +81,7 @@ export class DigitalListComponent implements OnInit {
       elem.imagesUrl = elem.imagesUrl.split(',');
       // elem.sale = (elem.sale === 1) ? 'On sale' : 'Disabled';
     })
-    this.productList = products.data;
+    this.products = products.data;
 
   }
 
@@ -180,7 +171,7 @@ export class DigitalListComponent implements OnInit {
   }
 
   reload() {
-    window.location.reload();
+    this.loadProducts();
   }
 
   pageChange(event) {

@@ -21,9 +21,7 @@ export class ListUserComponent implements OnInit {
   userSelected: number;
 
   public usersList: any[] = [];
-  public tableItem$: Observable<any[]>;
   public searchText;
-  total$: Observable<number>;
 
   users!: any[];
   selectedUsers!: any;
@@ -40,16 +38,12 @@ export class ListUserComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.tableItem$ = this.service.tableItem$;
-    this.total$ = this.service.total$;
     await this.loadUsers();
-    this.users = this.usersList;
-    this.service.setUserData(this.usersList)
   }
 
   async loadUsers() {
     const users = await this.getAllUsers();
-    this.usersList = users.data;
+    this.users = users.data;
   }
 
   async getAllUsers() {
@@ -162,7 +156,7 @@ export class ListUserComponent implements OnInit {
   }
 
   reload() {
-    window.location.reload();
+    this.loadUsers();
   }
 
 

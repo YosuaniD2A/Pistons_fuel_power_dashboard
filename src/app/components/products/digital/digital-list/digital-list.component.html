@@ -91,6 +91,7 @@
                             </div> -->
                             <p-table #dt [value]="products" [(selection)]="selectedProducts" dataKey="sku"
                                 [paginator]="true" [rows]="10" [tableStyle]="{'min-width': '50rem'}"
+                                [scrollable]="true" scrollHeight="700px"
                                 [showCurrentPageReport]="true"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                                 (onPage)="pageChange($event)" [rowsPerPageOptions]="[15, 25, 50]"
